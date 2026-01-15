@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -20,9 +21,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`antialiased`}
-      >
+      <head>
+        <Script
+          id="la-collect"
+          src="//sdk.51.la/js-sdk-pro.min.js"
+          strategy="afterInteractive"
+        />
+        <Script id="la-init" strategy="afterInteractive">
+          {`LA.init({id:"L4O2vEqOVP3gRIRw",ck:"L4O2vEqOVP3gRIRw"})`}
+        </Script>
+      </head>
+      <body className={`antialiased`}>
         {children}
       </body>
     </html>
