@@ -21,7 +21,7 @@ interface SEOProps {
 const SITE_NAME = 'Tyranor 模拟器';
 const DEFAULT_DESCRIPTION = 'Tyranor 是一款专为安卓移动端设计的免费 Galgame 模拟器，支持 RPG Maker、VN Maker、KRKR、Tyrano 等 20+ 游戏引擎，覆盖 90% 日式 AVG/RPG 游戏格式。独家渲染技术，加载速度提升 50%，智能温控算法，无广告无内购。';
 const DEFAULT_KEYWORDS = 'Tyranor, Tyranor模拟器, galgame模拟器, Galgame, AVG, RPG, 视觉小说, RPG Maker, VN Maker, KRKR, Tyrano, 安卓模拟器, 手机玩游戏, galgame手游, 美少女游戏, 文字冒险游戏, 游戏模拟器下载';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:5000';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tyranoremu.com';
 
 export default function SEO({
   title,

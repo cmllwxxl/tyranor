@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getBlogPosts } from '@/lib/blog-data';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:5000';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tyranoremu.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getBlogPosts();

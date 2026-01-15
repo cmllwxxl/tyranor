@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:5000';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tyranoremu.com';
 
 export default function robots(): MetadataRoute.Robots {
   return {
