@@ -59,147 +59,254 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
     notFound();
   }
 
-  // 渲染 Markdown 内容（简单处理）
+  // 渲染 Markdown 内容（美化版）
   const renderContent = (content: string) => {
     const lines = content.split('\n');
+    let stepCounter = 0;
+
     return lines.map((line, index) => {
-      // 标题
+      // 主标题 - 跳过（已在页面头部显示）
       if (line.startsWith('# ')) {
-        return (
-          <h1 key={index} className="text-4xl font-bold mt-8 mb-4 text-gray-900 dark:text-white">
-            {line.replace('# ', '')}
-          </h1>
-        );
+        return null;
       }
+
+      // 二级标题 - 带装饰线
       if (line.startsWith('## ')) {
+        const title = line.replace('## ', '');
+        const isStep = title.includes('步骤');
+        if (isStep) stepCounter++;
+
         return (
-          <h2 key={index} className="text-3xl font-bold mt-6 mb-3 text-gray-900 dark:text-white">
-            {line.replace('## ', '')}
-          </h2>
+          <div key={index} className="mt-12 mb-6">
+            <div className="flex items-center gap-3">
+              {isStep ? (
+                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold text-lg shadow-lg">
+                  {stepCounter}
+                </span>
+              ) : (
+                <span className="w-1.5 h-8 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></span>
+              )}
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                {isStep ? title.replace(/步骤\d+[：:]\s*/, '') : title}
+              </h2>
+            </div>
+            <div className="mt-3 h-px bg-gradient-to-r from-blue-200 via-purple-200 to-transparent dark:from-blue-800 dark:via-purple-800"></div>
+          </div>
         );
       }
+
+      // 三级标题
       if (line.startsWith('### ')) {
         return (
-          <h3 key={index} className="text-2xl font-bold mt-5 mb-2 text-gray-900 dark:text-white">
+          <h3 key={index} className="text-xl md:text-2xl font-semibold mt-8 mb-4 text-gray-800 dark:text-gray-100 flex items-center gap-2">
+            <span className="text-blue-500">▸</span>
             {line.replace('### ', '')}
           </h3>
         );
       }
+
+      // 四级标题
       if (line.startsWith('#### ')) {
         return (
-          <h4 key={index} className="text-xl font-bold mt-4 mb-2 text-gray-900 dark:text-white">
+          <h4 key={index} className="text-lg font-semibold mt-6 mb-3 text-gray-700 dark:text-gray-200">
             {line.replace('#### ', '')}
           </h4>
         );
       }
-      
-      // 图片
-      const imgMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
-      if (imgMatch) {
+
+      // 分隔线
+      if (line.trim() === '---') {
         return (
-          <div key={index} className="my-6">
-            <img 
-              src={imgMatch[2]} 
-              alt={imgMatch[1]} 
-              className="rounded-lg shadow-md max-w-full mx-auto"
-            />
-            {imgMatch[1] && (
-              <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
-                {imgMatch[1]}
-              </p>
-            )}
+          <div key={index} className="my-8 flex items-center gap-4">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent dark:via-gray-600"></div>
+            <span className="text-gray-400">✦</span>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent dark:via-gray-600"></div>
           </div>
         );
       }
+
+      // 图片 - 美化展示
+      const imgMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
+      if (imgMatch) {
+        return (
+          <figure key={index} className="my-8 group">
+            <div className="relative overflow-hidden rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]">
+              <img
+                src={imgMatch[2]}
+                alt={imgMatch[1]}
+                className="w-full h-auto object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            {imgMatch[1] && (
+              <figcaption className="mt-3 text-center text-sm text-gray-500 dark:text-gray-400 italic flex items-center justify-center gap-2">
+                <span className="w-8 h-px bg-gray-300 dark:bg-gray-600"></span>
+                {imgMatch[1]}
+                <span className="w-8 h-px bg-gray-300 dark:bg-gray-600"></span>
+              </figcaption>
+            )}
+          </figure>
+        );
+      }
       
-      // 链接
+      // 链接 - 美化为按钮样式（如下载链接）
       const linkMatch = line.match(/\[(.*?)\]\((.*?)\)/);
       if (linkMatch && line.trim().startsWith('[')) {
-        // 如果整行都是链接
-        if (line.trim() === line) {
+        const isDownload = linkMatch[1].includes('下载');
+        if (isDownload) {
           return (
-            <p key={index} className="mb-4">
-              <a href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline">
+            <div key={index} className="my-6">
+              <a
+                href={linkMatch[2]}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
                 {linkMatch[1]}
               </a>
-            </p>
+            </div>
           );
         }
+        return (
+          <p key={index} className="mb-4">
+            <a
+              href={linkMatch[2]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline decoration-2 underline-offset-2 hover:decoration-blue-400 transition-colors"
+            >
+              {linkMatch[1]}
+            </a>
+          </p>
+        );
       }
-      
-      // 列表
+
+      // 有序列表（数字开头）
+      const orderedMatch = line.match(/^(\d+)\.\s+\*\*(.*?)\*\*[,，]?\s*(.*)/);
+      if (orderedMatch) {
+        return (
+          <div key={index} className="flex gap-4 mb-4 p-4 bg-gradient-to-r from-blue-50 to-transparent dark:from-blue-900/20 dark:to-transparent rounded-lg border-l-4 border-blue-500">
+            <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-500 text-white font-bold rounded-full text-sm">
+              {orderedMatch[1]}
+            </span>
+            <div>
+              <strong className="text-gray-900 dark:text-white">{orderedMatch[2]}</strong>
+              <span className="text-gray-600 dark:text-gray-300">{orderedMatch[3]}</span>
+            </div>
+          </div>
+        );
+      }
+
+      // 无序列表 - 带粗体
       if (line.startsWith('- **')) {
-        const match = line.match(/- \*\*(.*?)\*\*:? ?(.*)/);
+        const match = line.match(/- \*\*(.*?)\*\*:?\s*(.*)/);
         if (match) {
           return (
-            <li key={index} className="ml-6 mb-2 text-gray-700 dark:text-gray-300">
-              <strong className="text-gray-900 dark:text-white">{match[1]}</strong>: {match[2]}
-            </li>
+            <div key={index} className="flex gap-3 mb-3 ml-2">
+              <span className="flex-shrink-0 w-2 h-2 mt-2 bg-blue-500 rounded-full"></span>
+              <div>
+                <strong className="text-gray-900 dark:text-white">{match[1]}</strong>
+                {match[2] && <span className="text-gray-600 dark:text-gray-300">：{match[2]}</span>}
+              </div>
+            </div>
           );
         }
       }
+
+      // 普通无序列表
       if (line.startsWith('- ')) {
         return (
-          <li key={index} className="ml-6 mb-2 text-gray-700 dark:text-gray-300">
-            {line.replace('- ', '')}
-          </li>
+          <div key={index} className="flex gap-3 mb-2 ml-2">
+            <span className="flex-shrink-0 w-2 h-2 mt-2 bg-gray-400 dark:bg-gray-500 rounded-full"></span>
+            <span className="text-gray-700 dark:text-gray-300">{line.replace('- ', '')}</span>
+          </div>
         );
       }
       
       // 空行
       if (line.trim() === '') {
-        return <br key={index} />;
+        return <div key={index} className="h-4"></div>;
       }
-      
-      // 普通段落（处理其中的链接）
+
+      // 普通段落（处理其中的链接和粗体）
       if (line.trim()) {
-        const parts = [];
+        const parts: React.ReactNode[] = [];
         let remaining = line;
         let partIndex = 0;
-        
+
         while (remaining) {
+          // 查找链接或粗体
           const linkIndex = remaining.indexOf('[');
-          if (linkIndex === -1) {
+          const boldIndex = remaining.indexOf('**');
+
+          if (linkIndex === -1 && boldIndex === -1) {
             parts.push(remaining);
             break;
           }
-          
-          if (linkIndex > 0) {
-            parts.push(remaining.substring(0, linkIndex));
+
+          // 处理粗体
+          if (boldIndex !== -1 && (linkIndex === -1 || boldIndex < linkIndex)) {
+            if (boldIndex > 0) {
+              parts.push(remaining.substring(0, boldIndex));
+            }
+            const endBold = remaining.indexOf('**', boldIndex + 2);
+            if (endBold !== -1) {
+              const boldText = remaining.substring(boldIndex + 2, endBold);
+              parts.push(
+                <strong key={`bold-${partIndex++}`} className="text-gray-900 dark:text-white font-semibold">
+                  {boldText}
+                </strong>
+              );
+              remaining = remaining.substring(endBold + 2);
+              continue;
+            }
           }
-          
-          const closeBracket = remaining.indexOf(']', linkIndex);
-          const openParen = remaining.indexOf('(', closeBracket);
-          const closeParen = remaining.indexOf(')', openParen);
-          
-          if (closeBracket !== -1 && openParen !== -1 && closeParen !== -1) {
-            const linkText = remaining.substring(linkIndex + 1, closeBracket);
-            const linkUrl = remaining.substring(openParen + 1, closeParen);
-            parts.push(
-              <a 
-                key={index + '-' + partIndex++} 
-                href={linkUrl} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline"
-              >
-                {linkText}
-              </a>
-            );
-            remaining = remaining.substring(closeParen + 1);
+
+          // 处理链接
+          if (linkIndex !== -1) {
+            if (linkIndex > 0) {
+              parts.push(remaining.substring(0, linkIndex));
+            }
+
+            const closeBracket = remaining.indexOf(']', linkIndex);
+            const openParen = remaining.indexOf('(', closeBracket);
+            const closeParen = remaining.indexOf(')', openParen);
+
+            if (closeBracket !== -1 && openParen !== -1 && closeParen !== -1) {
+              const linkText = remaining.substring(linkIndex + 1, closeBracket);
+              const linkUrl = remaining.substring(openParen + 1, closeParen);
+              parts.push(
+                <a
+                  key={`link-${partIndex++}`}
+                  href={linkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-700 dark:text-blue-400 underline decoration-2 underline-offset-2"
+                >
+                  {linkText}
+                </a>
+              );
+              remaining = remaining.substring(closeParen + 1);
+            } else {
+              parts.push(remaining);
+              break;
+            }
           } else {
             parts.push(remaining);
             break;
           }
         }
-        
+
         return (
-          <p key={index} className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+          <p key={index} className="mb-5 text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
             {parts}
           </p>
         );
       }
-      
+
       return null;
     });
   };
@@ -270,7 +377,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
 
           {/* 文章正文 */}
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <div className="bg-white dark:bg-gray-900 rounded-lg p-8 shadow-sm border border-gray-200 dark:border-gray-800">
+            <div className="bg-white dark:bg-gray-900/80 rounded-2xl p-6 md:p-10 shadow-xl border border-gray-100 dark:border-gray-800 backdrop-blur-sm">
               {renderContent(post.content)}
             </div>
           </div>
