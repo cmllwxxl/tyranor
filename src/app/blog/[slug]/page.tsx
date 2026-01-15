@@ -77,20 +77,20 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
         if (isStep) stepCounter++;
 
         return (
-          <div key={index} className="mt-12 mb-6">
-            <div className="flex items-center gap-3">
+          <div key={index} className="mt-8 mb-4">
+            <div className="flex items-center gap-2">
               {isStep ? (
-                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold text-lg shadow-lg">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold text-sm shadow">
                   {stepCounter}
                 </span>
               ) : (
-                <span className="w-1.5 h-8 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></span>
+                <span className="w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></span>
               )}
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
                 {isStep ? title.replace(/步骤\d+[：:]\s*/, '') : title}
               </h2>
             </div>
-            <div className="mt-3 h-px bg-gradient-to-r from-blue-200 via-purple-200 to-transparent dark:from-blue-800 dark:via-purple-800"></div>
+            <div className="mt-2 h-px bg-gradient-to-r from-blue-200 via-purple-200 to-transparent dark:from-blue-800 dark:via-purple-800"></div>
           </div>
         );
       }
@@ -98,7 +98,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
       // 三级标题
       if (line.startsWith('### ')) {
         return (
-          <h3 key={index} className="text-xl md:text-2xl font-semibold mt-8 mb-4 text-gray-800 dark:text-gray-100 flex items-center gap-2">
+          <h3 key={index} className="text-lg md:text-xl font-semibold mt-6 mb-3 text-gray-800 dark:text-gray-100 flex items-center gap-2">
             <span className="text-blue-500">▸</span>
             {line.replace('### ', '')}
           </h3>
@@ -125,24 +125,21 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
         );
       }
 
-      // 图片 - 美化展示
+      // 图片 - 美化展示（限制宽度）
       const imgMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
       if (imgMatch) {
         return (
-          <figure key={index} className="my-8 group">
-            <div className="relative overflow-hidden rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]">
+          <figure key={index} className="my-5 flex flex-col items-center">
+            <div className="relative overflow-hidden rounded-lg shadow-md border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 max-w-md w-full">
               <img
                 src={imgMatch[2]}
                 alt={imgMatch[1]}
                 className="w-full h-auto object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
             {imgMatch[1] && (
-              <figcaption className="mt-3 text-center text-sm text-gray-500 dark:text-gray-400 italic flex items-center justify-center gap-2">
-                <span className="w-8 h-px bg-gray-300 dark:bg-gray-600"></span>
+              <figcaption className="mt-2 text-center text-xs text-gray-500 dark:text-gray-400">
                 {imgMatch[1]}
-                <span className="w-8 h-px bg-gray-300 dark:bg-gray-600"></span>
               </figcaption>
             )}
           </figure>
@@ -301,7 +298,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
         }
 
         return (
-          <p key={index} className="mb-5 text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
+          <p key={index} className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base">
             {parts}
           </p>
         );
